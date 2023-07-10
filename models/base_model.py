@@ -10,6 +10,7 @@ import uuid
 from datetime import datetime
 import models
 
+
 class BaseModel:
     '''
     Define the base model class
@@ -30,7 +31,7 @@ class BaseModel:
         been updated with the current datetime.
         """
         self.updated_at = datetime.now()
-        models.storage.save()
+#        models.storage.save()
 
     def to_dict(self):
         """
@@ -48,4 +49,4 @@ class BaseModel:
         return dictionary
 
     def __str__(self):
-            return f'[{type(self).__name__}] ({self.id}) {self.__dict__}'
+        return f'[{type(self).__name__}] ({self.id}) {self.__dict__}'
