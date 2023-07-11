@@ -21,7 +21,7 @@ class BaseModel:
     updated_at(datetime): the date and time an instance is updated
     '''
     def __init__(self, *args, **kwargs):
-        if len(kwargs.keys()) > 0:
+        if kwargs is not None and len(kwargs.keys()) > 0:
             fmt = '%Y-%m-%dT%H:%M:%S.%f'
             for key, val in kwargs.items():
                 if key == '__class__':
@@ -36,6 +36,7 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
+            models.storage.new(self)
 
     def save(self):
         """
@@ -43,7 +44,7 @@ class BaseModel:
         been updated with the current datetime.
         """
         self.updated_at = datetime.now()
-#        models.storage.save()
+        models.storage.save()
 
     def to_dict(self):
         """
