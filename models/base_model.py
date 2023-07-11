@@ -20,10 +20,22 @@ class BaseModel:
     created_at(datetime): the date and time an instance is created
     updated_at(datetime): the date and time an instance is updated
     '''
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = self.created_at
+    def __init__(self, *args, **kwargs):
+        if len(kwargs.keys()) > 0:
+            fmt = '%Y-%m-%dT%H:%M:%S.%f'
+            for key, val in kwargs.items():
+                if key == '__class__':
+                    continue
+                if key == 'created_at':
+                    self.created_at = datetime.strptime(val, fmt)
+                elif key == 'updated_at':
+                    self.updated_at = datetime.strptime(val, fmt)
+                else:
+                    exec(f'self.{key} = val')
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = self.created_at
 
     def save(self):
         """
