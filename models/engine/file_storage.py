@@ -4,6 +4,7 @@ This module serializes and deserializes objects to and from json
 '''
 
 import json
+from models.user import User
 
 class FileStorage():
     """
