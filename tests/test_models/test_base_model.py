@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys
+from models import storage
 import unittest
 from datetime import datetime
 import uuid
@@ -43,3 +43,10 @@ class TestBaseModel(unittest.TestCase):
             self.assertTrue(key in self.example.__dict__.keys())
         self.assertEqual(type(self.example), type(self.example2))
         self.assertEqual(self.dict1['__class__'], type(self.example2).__name__)
+
+    def test_BaseModel_storage_engine(self):
+        self.example.save()
+        storage.reload()
+        stored_objects = storage.all()
+        example_object_key = f'{type(self.example).__name__}.{self.example.id}'
+        self.assertTrue(example_object_key in stored_objects.keys())
