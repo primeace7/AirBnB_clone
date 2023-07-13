@@ -16,7 +16,7 @@ class HBNBCommand(cmd.Cmd):
     valid_classes = ['BaseModel']
     storage = models.storage
 
-    def __is_valid_class(class_name):
+    def is_valid_class(self, class_name):
         '''
         Determine if an input string represents a valid class name
 
@@ -25,9 +25,9 @@ class HBNBCommand(cmd.Cmd):
 
         Returns: True if class_name is a valid class name, False otherwise
         '''
-        return class_name in valid_classes
+        return class_name in self.valid_classes
 
-    def get_object(class_name, obj_id):
+    def get_object(self, class_name, obj_id):
         '''
         Get an object from storage based on its id and type
 
@@ -39,7 +39,7 @@ class HBNBCommand(cmd.Cmd):
         Returns: The dictionary representation of the object if found,
             None otherwise
         '''
-        all_objects = storage.all()
+        all_objects = self.storage.all()
         for obj in all_objects.keys():
             #split each key into a list of class name and it's id
             obj_split = obj.split('.')
@@ -57,8 +57,10 @@ class HBNBCommand(cmd.Cmd):
         line = line.split()
         if line is None or len(line) == 0:
             print('** class name missing **')
-        elif not is_valid_class(line[0]):
+            return
+        elif not self.is_valid_class(line[0]):
             print('** class doesn\'t exist **')
+            return
         new = BaseModel()
         new.save()
         print(new.id)
@@ -74,70 +76,92 @@ class HBNBCommand(cmd.Cmd):
         line = line.split()
         if line is None or len(line) == 0:
             print('** class name missing **')
-        elif not is_valid_class(line[0]):
+            return
+        elif not self.is_valid_class(line[0]):
             print('** class doesn\'t exist **')
+            return
         elif len(line) == 1:
             print("** instance id missing **")
-        elif (obj = get_object(line[0], line[1]):
-              print(obj)
+            return
+        obj = self.get_object(line[0], line[1])
+        if (obj is not None):
+            print(str(BaseModel(**obj)))
         else:
-              print(('** no instance found **')
+            print('** no instance found **')
 
     def do_destroy(self, line):
-                    '''
+        '''
         Delete an instance using the class name and the instance id
 
         Args:
         line(str): the user's input string representing the instance to destroy
         '''
-                    line = line.split()
+        line = line.split()
         if line is None or len(line) == 0:
-                    print("** class name missing **")
-        elif not is_valid_class(line[0]):
-                    print("** class doesn't exist **")
+            print("** class name missing **")
+            return
+        elif not self.is_valid_class(line[0]):
+            print("** class doesn't exist **")
+            return
         elif len(line) == 1:
-                    print('** instance id missing **')
-        elif (obj = get_object(line[0], line[1])):
-                    del storage.all()[line[1]]
+            print('** instance id missing **')
+            return
+        obj = self.get_object(line[0], line[1])
+        if (obj is not None):
+            del self.storage.all()[f'{line[0]}.{line[1]}']
+            self.storage.save()
         else:
-                    print('** no instance found **')
+            print('** no instance found **')
 
     def do_all(self, line):
-                    '''
+        '''
         Print the string representation of all instances of the class name
             entered by user, as a list
 
         Args:
         line(str): the name of the class to print the instances of
         '''
-                    line = line.split()
-        if len(line) >= 1 and not is_valid_class(line[0]):
-                    print("** class doesn't exist **")
+        line = line.split()
+        if len(line) >= 1 and not self.is_valid_class(line[0]):
+            print("** class doesn't exist **")
+            return
         else:
-                    print(storage.all().values())
-
+            all_obj_list = [str(BaseModel(**obj)) for obj in\
+                        self.storage.all().values()]
+            print(all_obj_list)
 
     def do_update(self, line):
-                    '''
+        '''
         Print the string representation of all instances of the class name
             entered by user
 
         Args:
         line(str): the name of the class to print the instances of
         '''
-                    line = line.split()
+        line = line.split()
         if line is None or len(line) == 0:
-                    print("** class doesn't exist **")
+            print("** class name missing **")
+            return
+        elif not self.is_valid_class(line[0]):
+            print("** class doesn't exist **")
+            return
         elif len(line) == 1:
-                    print("** instance id missing **")
+            print("** instance id missing **")
+            return
         elif len(line) == 2:
-                    print("** instance id missing **")
+            print("** attribute name missing **")
+            return
         elif len(line) == 3:
-                    print("** value missing **")
-        elif not (obj = get_object(line[0], line[1])):
-                    print("** no instance found **")
+            print("** value missing **")
+            return
+        obj = self.get_object(line[0], line[1])
+        if obj is None:
+            print("** no instance found **")
         else:
+            obj = self.get_object(line[0], line[1])
+#add a new value to the dict of the object whose key is line[2]
             obj[line[2]] = line[3]
+            self.storage.save()
 
     def do_EOF(self, args):
         """
