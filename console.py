@@ -3,6 +3,11 @@
 import cmd
 import models
 from models.base_model import BaseModel
+from models.place import Place
+from models.review import Review
+from models.amenity import Amenity
+from models.city import City
+from models.state import State
 from models.user import User
 
 class HBNBCommand(cmd.Cmd):
@@ -14,7 +19,8 @@ class HBNBCommand(cmd.Cmd):
     prompt(str): the prompt to display when soliciting for input
     """
     prompt = '(hbnb) '
-    valid_classes = ['BaseModel']
+    valid_classes = ['BaseModel', 'User','Place', 'State', 'City',\
+                     'Amenity', 'Review']
     storage = models.storage
 
     def is_valid_class(self, class_name):
@@ -62,7 +68,7 @@ class HBNBCommand(cmd.Cmd):
         elif not self.is_valid_class(line[0]):
             print('** class doesn\'t exist **')
             return
-        new = BaseModel()
+        new = eval(f'{line[0]}()')
         new.save()
         print(new.id)
 
@@ -86,7 +92,7 @@ class HBNBCommand(cmd.Cmd):
             return
         obj = self.get_object(line[0], line[1])
         if (obj is not None):
-            print(str(BaseModel(**obj)))
+            print(str(eval(f'{line[0]}(**obj)')))
         else:
             print('** no instance found **')
 
@@ -127,7 +133,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
         else:
-            all_obj_list = [str(BaseModel(**obj)) for obj in\
+            all_obj_list = [str(eval(f'{obj["__class__"]}(**obj)')) for obj in\
                         self.storage.all().values()]
             print(all_obj_list)
 
