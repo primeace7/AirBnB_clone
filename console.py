@@ -20,8 +20,10 @@ class HBNBCommand(cmd.Cmd):
     prompt(str): the prompt to display when soliciting for input
     """
     prompt = '(hbnb) '
-    valid_classes = ['BaseModel', 'User', 'Place', 'State', 'City',\
-            'Amenity', 'Review']
+    valid_classes = [
+            'BaseModel', 'User', 'Place', 'State', 'City',
+            'Amenity', 'Review'
+            ]
     storage = models.storage
 
     def precmd(self, line):
@@ -76,8 +78,11 @@ class HBNBCommand(cmd.Cmd):
         class_name(str): the instances to list e.g User
         arg_string(str): always empty for this method
         '''
-        all_objs = [eval(f'{obj["__class__"]}(**obj)') for obj in\
-                self.storage.all().values() if obj['__class__'] == class_name]
+        all_objs = [
+                eval(f'{obj["__class__"]}(**obj)')
+                for obj in self.storage.all().values()
+                if obj['__class__'] == class_name
+                ]
 
         string_all = ''
         for i in range(len(all_objs)):
@@ -193,7 +198,8 @@ class HBNBCommand(cmd.Cmd):
         Create an instance of <line>, provided <line> is a valid class name
 
         Args:
-        line(str): the user's input string representing the class to instantiate
+        line(str): the user's input string
+        representing the class to instantiate
         '''
         line = line.split()
         if line is None or len(line) == 0:
@@ -235,7 +241,8 @@ class HBNBCommand(cmd.Cmd):
         Delete an instance using the class name and the instance id
 
         Args:
-        line(str): the user's input string representing the instance to destroy
+        line(str): the user's input string
+        representing the instance to destroy
         '''
         line = line.split()
         if line is None or len(line) == 0:
@@ -267,8 +274,10 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
         else:
-            all_obj_list = [str(eval(f'{obj["__class__"]}(**obj)')) for obj in\
-                    self.storage.all().values()]
+            all_obj_list = [
+                    str(eval(f'{obj["__class__"]}(**obj)'))
+                    for obj in self.storage.all().values()
+                    ]
             print(all_obj_list)
 
     def do_update(self, line):
