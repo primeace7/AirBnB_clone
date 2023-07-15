@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+'''
+Implement a console application, similar to a shell, using
+  the cmd module. This creates an environment for manipulating
+  objects in the json storage engine
+'''
 import cmd
 import models
 from models.base_model import BaseModel
@@ -39,8 +44,11 @@ class HBNBCommand(cmd.Cmd):
         #cmd_list is the entire input command line split into a list
         cmd_list = line.split('.', maxsplit=1)
         class_name = cmd_list[0]
-        if len(cmd_list) < 2 or not self.is_valid_class(cmd_list[0]):
+        if len(cmd_list) < 2:
             return line
+        elif not self.is_valid_class(cmd_list[0]):
+            print("** class doesn't exist")
+            return ''
         else:
             func_strings = ['show', 'destroy', 'all', 'count', 'update']
             if '(' not in cmd_list[1] or ')' not in cmd_list[1]:
@@ -122,9 +130,7 @@ class HBNBCommand(cmd.Cmd):
     def special_destroy(self, arg_string, class_name):
         '''
         The special implementation of the destroy command e.g User.destroy(id).
-          This call will destroy the instance of the specified User object
-          with id equal to the one specified
-
+          
         Args:
         class_name(str): the object type to destroy e.g User
         arg_string(str): the supplied argument, instance id in this case

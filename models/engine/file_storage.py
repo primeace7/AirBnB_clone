@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 '''
-This module serializes and deserializes objects to and from json
+This module serializes and deserializes objects to and from
+  a json file. This allows for object persistence
 '''
 
 import json
@@ -48,7 +49,8 @@ class FileStorage():
 
     def reload(self):
         '''
-        Deserialize the content of the json file into the __objects dictionary
+        Deserialize the content of the json file into the __objects class
+          variable (which is a dictionary) of the FileStorage class
         '''
         try:
             with open(f'{type(self).__file_path}', mode='r', encoding='UTF8')\
