@@ -5,6 +5,7 @@ This module serializes and deserializes objects to and from json
 
 import json
 
+
 class FileStorage():
     """
     Filestorage class for serializing and deserializing objects
