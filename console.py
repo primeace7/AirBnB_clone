@@ -25,10 +25,8 @@ class HBNBCommand(cmd.Cmd):
     prompt(str): the prompt to display when soliciting for input
     """
     prompt = '(hbnb) '
-    valid_classes = [
-            'BaseModel', 'User', 'Place', 'State', 'City',
-            'Amenity', 'Review'
-            ]
+    valid_classes = ['BaseModel', 'User', 'Place', 'State', 'City']
+    valid_classes += ['Amenity', 'Review']
     storage = models.storage
 
     def precmd(self, line):
@@ -44,13 +42,13 @@ class HBNBCommand(cmd.Cmd):
 
         Return: line
         '''
-        # cmd_list is the entire input command line split into a list
+    # cmd_list is the entire input command line split into a list
         cmd_list = line.split('.', maxsplit=1)
         class_name = cmd_list[0]
         if len(cmd_list) < 2:
             return line
         elif not self.is_valid_class(cmd_list[0]):
-            print("** class doesn't exist **")
+            print("** class doesn't exist")
             return ''
         else:
             func_strings = ['show', 'destroy', 'all', 'count', 'update']
@@ -86,11 +84,9 @@ class HBNBCommand(cmd.Cmd):
         class_name(str): the instances to list e.g User
         arg_string(str): always empty for this method
         '''
-        all_objs = [
-                eval(f'{obj["__class__"]}(**obj)')
-                for obj in self.storage.all().values()
-                if obj['__class__'] == class_name
-                ]
+        all_objs = [eval(f'{obj["__class__"]}(**obj)') for obj in
+                    self.storage.all().values() if obj['__class__']
+                    == class_name]
 
         string_all = ''
         for i in range(len(all_objs)):
@@ -154,8 +150,16 @@ class HBNBCommand(cmd.Cmd):
         class_name(str): the object type to destroy e.g User
         arg_string(str): the supplied argument, instance id in this case
         '''
-        if arg_string[-1].startswith('{') and arg_string[-1].endswith('}'):
-            last_arg = eval(arg_string[-1])
+        if arg_string is None or arg_string[0] == '':
+            line = class_name
+            self.do_update(line)
+        elif arg_string[-1].startswith('{') and arg_string[-1].endswith('}'):
+            try:
+                last_arg = eval(arg_string[-1])
+            except Exception as e:
+                print(e.message())
+                return ''
+
             if isinstance(last_arg, dict):
                 for key, val in last_arg.items():
                     line = class_name + ' ' + arg_string[0] + ' ' + key + ' '\
@@ -163,9 +167,11 @@ class HBNBCommand(cmd.Cmd):
                     self.do_update(line)
             else:
                 print('there was a problem converting last_arg to dict')
+                return ''
         else:
-            line = class_name + ' ' + arg_string[0] + ' ' + arg_string[1]\
-                + ' ' + arg_string[2]
+            line = class_name
+            for elem in arg_string:
+                line += ' ' + elem
             self.do_update(line)
 
     def is_valid_class(self, class_name):
@@ -204,8 +210,8 @@ class HBNBCommand(cmd.Cmd):
         Create an instance of <line>, provided <line> is a valid class name
 
         Args:
-        line(str): the user's input string
-        representing the class to instantiate
+        line(str): the user's input string representing the class
+          to instantiate
         '''
         line = line.split()
         if line is None or len(line) == 0:
@@ -247,8 +253,7 @@ class HBNBCommand(cmd.Cmd):
         Delete an instance using the class name and the instance id
 
         Args:
-        line(str): the user's input string
-        representing the instance to destroy
+        line(str): the user's input string representing the instance to destroy
         '''
         line = line.split()
         if line is None or len(line) == 0:
@@ -280,21 +285,18 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
         else:
-            all_obj_list = [
-                    str(eval(f'{obj["__class__"]}(**obj)'))
-                    for obj in self.storage.all().values()
-                    ]
+            all_obj_list = [str(eval(f'{obj["__class__"]}(**obj)')) for obj in
+                            self.storage.all().values()]
             print(all_obj_list)
 
     def do_update(self, line):
         '''
-        Print the string representation of all instances of the class name
-            entered by user
+        Update an attribute of the object specified by the user
 
         Args:
-        line(str): the name of the class to print the instances of
+        line(str): the instance id, attribute name, attribute vaqlue to update
         '''
-        line = line.split()
+        line = line.strip().split()
         if line is None or len(line) == 0:
             print("** class name missing **")
             return
@@ -315,7 +317,7 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
         else:
             obj = self.get_object(line[0], line[1])
-            # add a new value to the dict of the object whose key is line[2]
+# add a new value to the dict of the object whose key is line[2]
             obj[line[2]] = line[3]
             self.storage.save()
 
