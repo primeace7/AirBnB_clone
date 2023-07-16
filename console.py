@@ -15,6 +15,7 @@ from models.city import City
 from models.state import State
 from models.user import User
 
+
 class HBNBCommand(cmd.Cmd):
     """
     Class that contains the entry point of the command
@@ -24,8 +25,10 @@ class HBNBCommand(cmd.Cmd):
     prompt(str): the prompt to display when soliciting for input
     """
     prompt = '(hbnb) '
-    valid_classes = ['BaseModel', 'User','Place', 'State', 'City',\
-                     'Amenity', 'Review']
+    valid_classes = [
+            'BaseModel', 'User', 'Place', 'State', 'City',
+            'Amenity', 'Review'
+            ]
     storage = models.storage
 
     def precmd(self, line):
@@ -41,26 +44,26 @@ class HBNBCommand(cmd.Cmd):
 
         Return: line
         '''
-        #cmd_list is the entire input command line split into a list
+        # cmd_list is the entire input command line split into a list
         cmd_list = line.split('.', maxsplit=1)
         class_name = cmd_list[0]
         if len(cmd_list) < 2:
             return line
         elif not self.is_valid_class(cmd_list[0]):
-            print("** class doesn't exist")
+            print("** class doesn't exist **")
             return ''
         else:
             func_strings = ['show', 'destroy', 'all', 'count', 'update']
             if '(' not in cmd_list[1] or ')' not in cmd_list[1]:
                 print('invalid command:', line, '=> parentheses missing')
                 return ''
-            #root_cmd is the actual command e.g all, update
+            # root_cmd is the actual command e.g all, update
             root_cmd = cmd_list[1].split('(')[0]
 
-            #retrieve the content enclosed by the parentheses ( and )
+            # retrieve the content enclosed by the parentheses ( and )
             hold_var = cmd_list[1].split('(')[1]
 
-            #arg_string is content enclosed by parentheses, could be any type
+            # arg_string is content enclosed by parentheses, could be any type
             if hold_var.split(')')[0].endswith('}'):
                 arg_string = hold_var.split(')')[0].split(', ', maxsplit=1)
             else:
@@ -83,8 +86,11 @@ class HBNBCommand(cmd.Cmd):
         class_name(str): the instances to list e.g User
         arg_string(str): always empty for this method
         '''
-        all_objs = [eval(f'{obj["__class__"]}(**obj)') for obj in\
-                  self.storage.all().values() if obj['__class__'] == class_name]
+        all_objs = [
+                eval(f'{obj["__class__"]}(**obj)')
+                for obj in self.storage.all().values()
+                if obj['__class__'] == class_name
+                ]
 
         string_all = ''
         for i in range(len(all_objs)):
@@ -130,7 +136,7 @@ class HBNBCommand(cmd.Cmd):
     def special_destroy(self, arg_string, class_name):
         '''
         The special implementation of the destroy command e.g User.destroy(id).
-          
+
         Args:
         class_name(str): the object type to destroy e.g User
         arg_string(str): the supplied argument, instance id in this case
@@ -187,7 +193,7 @@ class HBNBCommand(cmd.Cmd):
         '''
         all_objects = self.storage.all()
         for obj in all_objects.keys():
-            #split each key into a list of class name and it's id
+            # split each key into a list of class name and it's id
             obj_split = obj.split('.')
             if (class_name, obj_id) == (obj_split[0], obj_split[1]):
                 return all_objects[obj]
@@ -198,7 +204,8 @@ class HBNBCommand(cmd.Cmd):
         Create an instance of <line>, provided <line> is a valid class name
 
         Args:
-        line(str): the user's input string representing the class to instantiate
+        line(str): the user's input string
+        representing the class to instantiate
         '''
         line = line.split()
         if line is None or len(line) == 0:
@@ -240,7 +247,8 @@ class HBNBCommand(cmd.Cmd):
         Delete an instance using the class name and the instance id
 
         Args:
-        line(str): the user's input string representing the instance to destroy
+        line(str): the user's input string
+        representing the instance to destroy
         '''
         line = line.split()
         if line is None or len(line) == 0:
@@ -272,8 +280,10 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
         else:
-            all_obj_list = [str(eval(f'{obj["__class__"]}(**obj)')) for obj in\
-                        self.storage.all().values()]
+            all_obj_list = [
+                    str(eval(f'{obj["__class__"]}(**obj)'))
+                    for obj in self.storage.all().values()
+                    ]
             print(all_obj_list)
 
     def do_update(self, line):
@@ -305,7 +315,7 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
         else:
             obj = self.get_object(line[0], line[1])
-#add a new value to the dict of the object whose key is line[2]
+            # add a new value to the dict of the object whose key is line[2]
             obj[line[2]] = line[3]
             self.storage.save()
 
@@ -326,8 +336,6 @@ class HBNBCommand(cmd.Cmd):
         method not to input anything when empty
         """
         pass
-
-
 
 
 if __name__ == '__main__':
