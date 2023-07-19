@@ -11,7 +11,7 @@ from datetime import datetime
 from . import storage
 
 
-class BaseModel:
+class BaseModel():
     '''
     Define the base model class
 

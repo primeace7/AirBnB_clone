@@ -3,7 +3,6 @@
 This module serializes and deserializes objects to and from
   a json file. This allows for object persistence
 '''
-
 import json
 
 
